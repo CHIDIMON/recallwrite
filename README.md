@@ -29,9 +29,9 @@ You need to have [Docker Desktop](https://www.docker.com/products/docker-desktop
 
 1.  **Clone the repository:**
     First, clone the project from GitHub to your local machine:
-    ```bash
-    git clone https://github.com/your-username/recall-write.git # Replace with your actual repo URL
-    cd recall-write
+    ```bash https://github.com/CHIDIMON/recallwrite.git
+    git clone https://github.com/CHIDIMON/recallwrite.git
+    cd RECALL WRITE
     ```
 
 2.  **Run the Application with Docker Compose:**
