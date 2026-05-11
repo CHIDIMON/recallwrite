@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  recall-write:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      # Map ข้อมูลสำคัญออกมาไว้ที่เครื่องหลัก เพื่อไม่ให้ข้อมูลหายเมื่อ Container ดับ
+      - ./recall_v2.db:/app/recall_v2.db
+      - ./uploads:/app/uploads
+    restart: unless-stopped

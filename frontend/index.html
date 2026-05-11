@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recall Write</title>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.bubble.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill-blot-formatter@1.0.5/dist/quill-blot-formatter.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-actions">
+                    <button id="new-note-btn" onclick="createNewNote()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        New Note
+                    </button>
+                    <button id="new-folder-btn" onclick="createNewFolder()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>
+                        New Folder
+                    </button>
+                </div>
+                <div class="search-container">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="search-box" placeholder="Search notes..." onkeyup="searchNotes()">
+                </div>
+                <div class="sort-container">
+                    <select id="sort-options" onchange="refreshListUI()">
+                        <option value="updated_desc">Sort by: Last Edited</option>
+                        <option value="created_desc">Sort by: Date Created (Newest)</option>
+                        <option value="created_asc">Sort by: Date Created (Oldest)</option>
+                    </select>
+                </div>
+                <div class="sidebar-tabs">
+                    <button id="tab-active" class="tab-btn active" onclick="switchTab('active')">📝 Notes</button>
+                    <button id="tab-trash" class="tab-btn" onclick="switchTab('trash')">🗑️ Trash</button>
+                </div>
+            </div>
+            <ul id="note-list"></ul>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <button id="toggle-sidebar" onclick="toggleSidebar()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </button>
+                <input type="hidden" id="note-folder">
+                </div>
+                <div class="top-bar-right">
+                    <button id="restore-btn" onclick="restoreNote()" style="display: none;">Restore</button>
+                    <button id="pin-btn" onclick="togglePinNote()" style="display: none;">📌 Pin</button>
+                    <button id="img-btn" onclick="selectLocalImage()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px; margin-right: 4px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        Add Image
+                    </button>
+                    <button id="delete-btn" onclick="deleteNote()" style="display: none;">Delete</button>
+                    <button id="save-btn" onclick="saveNote()">Save</button>
+                </div>
+            </header>
+
+            <div id="note-timestamps" class="note-timestamps" style="display: none;"></div>
+
+            <div class="editor-wrapper">
+                <div id="editor-container"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Custom Prompt Modal -->
+    <div id="custom-prompt-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="custom-prompt-title">Create New Folder</h3>
+            <input type="text" id="custom-prompt-input" placeholder="Folder name..." autocomplete="off">
+            <div class="modal-actions">
+                <button id="custom-prompt-cancel" class="btn-cancel">Cancel</button>
+                <button id="custom-prompt-confirm" class="btn-primary">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirm Modal -->
+    <div id="custom-confirm-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="custom-confirm-title">Confirm</h3>
+            <p id="custom-confirm-message"></p>
+            <div class="modal-actions">
+                <button id="custom-confirm-cancel" class="btn-cancel">Cancel</button>
+                <button id="custom-confirm-btn" class="btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill-blot-formatter@1.0.5/dist/quill-blot-formatter.min.js"></script>
+    <script src="js/editor.js"></script>
+</body>
+</html>

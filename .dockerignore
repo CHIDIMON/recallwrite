@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+recall_v2.db
+uploads/
